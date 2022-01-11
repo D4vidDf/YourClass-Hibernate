@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.d4viddf.Error.Errores;
-import com.d4viddf.Factory.Dao;
 import com.d4viddf.Tablas.Imparten;
 
 import org.json.JSONArray;
@@ -20,7 +19,7 @@ import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class ImpartenDAO implements Dao<Imparten> {
+public class ImpartenDAO{
     Errores errores = new Errores();
     static Scanner teclado = new Scanner(System.in);
     private static FileWriter file;
@@ -32,7 +31,6 @@ public class ImpartenDAO implements Dao<Imparten> {
      * @param id
      * @return Imparten
      */
-    @Override
     public Imparten get(Connection con, int id) {
         return null;
     }
@@ -43,7 +41,7 @@ public class ImpartenDAO implements Dao<Imparten> {
      * @param conn
      * @return List<Imparten>
      */
-    @Override
+
     public List<Imparten> getAll(Connection conn) {
         List<Imparten> lista = null;
         try {

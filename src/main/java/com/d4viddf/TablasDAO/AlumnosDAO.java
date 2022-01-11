@@ -8,21 +8,21 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
-import com.d4viddf.Factory.Dao;
 import com.d4viddf.Tablas.Alumnos;
 
+import org.hibernate.Session;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-public class AlumnosDAO implements Dao<Alumnos> {
+public class AlumnosDAO {
     public static String ROW_NOMBRE = "nombre";
     public static String ROW_APELLIDOS = "apellidos";
     private static FileWriter file;
@@ -32,31 +32,15 @@ public class AlumnosDAO implements Dao<Alumnos> {
      * Método para devolver una Lista con todos los alumnos existentes en la base de
      * datos
      */
-    @Override
-    public List<Alumnos> getAll(Connection conn) {
-        List<Alumnos> lista = new ArrayList<>();
-        try {
-            Statement s = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs = s.executeQuery("SELECT * FROM Alumnos;");
-            int totalRows = 0;
-            rs.last();
-            totalRows = rs.getRow();
-            rs.beforeFirst();
-            lista = new ArrayList<Alumnos>(totalRows);
-            while (rs.next()) {
-                Alumnos emp = new Alumnos();
-                emp.setExpediente(rs.getInt(1));
-                emp.setDNI(rs.getString(2));
-                emp.setNombre(rs.getString(3));
-                emp.setApellidos(rs.getString(4));
-                emp.setNacimiento(LocalDate.parse(rs.getString(5)));
-                lista.add(emp);
-            }
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
-        } catch (DateTimeException e) {
-            errores.muestraErrorDate(e);
-        }
+    public List<Alumnos> getAll() {
+
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        @SuppressWarnings("unchecked")
+        List<Alumnos> lista = (List<Alumnos>) session.createQuery(
+                "FROM Alumnos").list();
+        session.getTransaction().commit();
+        session.close();
         return lista;
     }
 
@@ -65,23 +49,9 @@ public class AlumnosDAO implements Dao<Alumnos> {
      * 
      * @param id Número de Expediente
      */
-    @Override
-    public Alumnos get(Connection con, int id) {
-        Alumnos al = new Alumnos();
-        try {
-            PreparedStatement s = con.prepareStatement("select * from alumnos where expediente = ?");
-            s.setInt(1, id);
-            ResultSet rs = s.executeQuery();
-            rs.next();
-            al.setExpediente(rs.getInt(1));
-            al.setDNI(rs.getString(2));
-            al.setNombre(rs.getString(3));
-            al.setApellidos(rs.getString(4));
-            al.setNacimiento(LocalDate.parse(rs.getString(5)));
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
-        }
-        return al;
+    public Alumnos get( int id, Session session) {
+
+        return (Alumnos) session.get(Alumnos.class, id);
     }
 
     /**
@@ -103,7 +73,7 @@ public class AlumnosDAO implements Dao<Alumnos> {
                 al.setDNI(rs.getString(2));
                 al.setNombre(rs.getString(3));
                 al.setApellidos(rs.getString(4));
-                al.setNacimiento(LocalDate.parse(rs.getString(5)));
+                al.setNacimiento(Date.valueOf(LocalDate.parse(rs.getString(5))));
                 lista.add(al);
             }
         } catch (SQLException e) {
@@ -135,7 +105,7 @@ public class AlumnosDAO implements Dao<Alumnos> {
                 al.setDNI(rs.getString(2));
                 al.setNombre(rs.getString(3));
                 al.setApellidos(rs.getString(4));
-                al.setNacimiento(LocalDate.parse(rs.getString(5)));
+                al.setNacimiento(Date.valueOf(LocalDate.parse(rs.getString(5))));
                 lista.add(al);
             }
         } catch (SQLException e) {
@@ -164,7 +134,7 @@ public class AlumnosDAO implements Dao<Alumnos> {
                 al.setDNI(rs.getString(2));
                 al.setNombre(rs.getString(3));
                 al.setApellidos(rs.getString(4));
-                al.setNacimiento(LocalDate.parse(rs.getString(5)));
+                al.setNacimiento(Date.valueOf(LocalDate.parse(rs.getString(5))));
                 lista.add(al);
             }
         } catch (SQLException e) {
@@ -193,7 +163,7 @@ public class AlumnosDAO implements Dao<Alumnos> {
                 al.setDNI(rs.getString(2));
                 al.setNombre(rs.getString(3));
                 al.setApellidos(rs.getString(4));
-                al.setNacimiento(LocalDate.parse(rs.getString(5)));
+                al.setNacimiento(Date.valueOf(rs.getString(5)));
                 lista.add(al);
             }
         } catch (SQLException e) {
@@ -278,7 +248,7 @@ public class AlumnosDAO implements Dao<Alumnos> {
     public void exportar(Connection con, String path) {
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArr = new JSONArray();
-        List<Alumnos> list = this.getAll(con);
+        List<Alumnos> list = this.getAll();
         list.forEach(item -> {
             JSONObject obj = new JSONObject();
             obj.put("num_exp", item.getExpediente());

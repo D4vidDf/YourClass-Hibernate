@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.d4viddf.Error.Errores;
-import com.d4viddf.Factory.Dao;
 import com.d4viddf.Tablas.Profesores;
 
 import org.json.JSONArray;
@@ -24,7 +23,7 @@ import org.json.simple.parser.JSONParser;
 /**
  * Clase ProfesoresDAO encargada de manejar la información de la base de datos
  */
-public class ProfesoresDAO implements Dao<Profesores> {
+public class ProfesoresDAO{
     public static String ROW_NOMBRE = "nombre";
     public static String ROW_APELLIDOS = "apellidos";
     public static String ROW_DEPARTAMENTO = "departamentos";
@@ -39,7 +38,6 @@ public class ProfesoresDAO implements Dao<Profesores> {
      * @param id  Código del Profesor
      * @return Profesores
      */
-    @Override
     public Profesores get(Connection con, int id) {
         Profesores al = new Profesores();
         try {
@@ -66,7 +64,6 @@ public class ProfesoresDAO implements Dao<Profesores> {
      * @param con
      * @return List<Profesores>
      */
-    @Override
     public List<Profesores> getAll(Connection con) {
         List<Profesores> lista = null;
         try {

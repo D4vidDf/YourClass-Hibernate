@@ -1,11 +1,22 @@
 package com.d4viddf.Tablas;
 
-import java.sql.Date;
+import javax.persistence.*;
 import java.time.LocalDate;
-
+@Entity
+@Table (name = "profesores")
 public class Profesores {
-    public int departamento, cod_prof;
-    public String DNI, nombre, apellidos;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public int cod_prof;
+    @Column(name = "departamentos")
+    public int departamento;
+    @Column(name = "dni")
+    public String DNI;
+    @Column(name = "nombre")
+    public String nombre;
+    @Column(name = "apellidos")
+    public String apellidos;
+    @Column(name = "fecha_nacimiento")
     public LocalDate fecha_nacimiento;
 
     

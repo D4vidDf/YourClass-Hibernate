@@ -13,14 +13,13 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.d4viddf.Error.Errores;
-import com.d4viddf.Factory.Dao;
 import com.d4viddf.Tablas.Departamentos;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-public class DepartamentosDAO implements Dao<Departamentos> {
+public class DepartamentosDAO{
     private static FileWriter file;
     Errores errores = new Errores();
     static Scanner teclado = new Scanner(System.in);
@@ -32,7 +31,6 @@ public class DepartamentosDAO implements Dao<Departamentos> {
      * @param id ID de departamento
      * @return Departamentos
      */
-    @Override
     public Departamentos get(Connection con, int id) {
         Departamentos departamentos = new Departamentos();
         try {
@@ -56,7 +54,6 @@ public class DepartamentosDAO implements Dao<Departamentos> {
      * @param con
      * @return List<Departamentos>
      */
-    @Override
     public List<Departamentos> getAll(Connection con) {
         List <Departamentos> lista = new ArrayList<>();
         try {

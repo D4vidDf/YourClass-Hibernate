@@ -9,13 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.d4viddf.Error.Errores;
-import com.d4viddf.Factory.Dao;
 import com.d4viddf.Tablas.ViewImparten;
 
 /**
  * Clase DAO de la vista ViewImparten que implementa la fábrica DAO
  */
-public class ViewImpartenDAO implements Dao<ViewImparten> {
+public class ViewImpartenDAO {
     public static String ROW_COD_asg = "IDasignatura";
     public static String ROW_NOMBRE_Aasg = "Nombreasignatura";
     public static String ROW_NOMBRE_Alumnos = "Nombrealumno";
@@ -37,7 +36,6 @@ public class ViewImpartenDAO implements Dao<ViewImparten> {
      * @param id
      * @return ViewImparten
      */
-    @Override
     public ViewImparten get(Connection con, int id) {
 
         return null;
@@ -51,7 +49,7 @@ public class ViewImpartenDAO implements Dao<ViewImparten> {
      * @param conn
      * @return List<ViewImparten>
      */
-    @Override
+
     public List<ViewImparten> getAll(Connection conn) {
         List<ViewImparten> lista = null;
         try {

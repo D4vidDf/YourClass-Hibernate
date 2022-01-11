@@ -1,5 +1,8 @@
 package com.d4viddf.Tablas;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 public class ViewImparten {
     public int Expedientealumno, CodProf, IDasignatura;
     public String CursoImparten, Nombrealumno, Apellidosalumno, DNIalumno, DNIprofesor, NombreProfesor,

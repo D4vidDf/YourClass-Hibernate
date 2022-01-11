@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.d4viddf.Error.Errores;
-import com.d4viddf.Factory.Dao;
 import com.d4viddf.Tablas.Asignaturas;
 
 import org.json.JSONArray;
@@ -22,7 +21,7 @@ import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class AsignaturasDAO implements Dao<Asignaturas> {
+public class AsignaturasDAO{
     private static FileWriter file;
     Errores errores = new Errores();
     public static String ROW_NOMBRE = "nombre";
@@ -36,7 +35,6 @@ public class AsignaturasDAO implements Dao<Asignaturas> {
      * @param id
      * @return Asignaturas
      */
-    @Override
     public Asignaturas get(Connection con, int id) {
         Asignaturas as = new Asignaturas();
         try {
@@ -60,7 +58,6 @@ public class AsignaturasDAO implements Dao<Asignaturas> {
      * @param conn
      * @return List<Asignaturas>
      */
-    @Override
     public List<Asignaturas> getAll(Connection conn) {
         List<Asignaturas> lista = null;
         try {

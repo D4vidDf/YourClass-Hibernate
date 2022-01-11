@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
 import com.d4viddf.Tablas.Alumnos;
 import com.d4viddf.TablasDAO.AlumnosDAO;
@@ -124,11 +125,8 @@ public class AlumnosController extends DBViewController implements Initializable
      */
     private void mostrar() {
         List<Alumnos> als = new ArrayList<>();
-        try {
-            als = mySQLDAOFactory.getAlumnosDAO().getAll(mySQLDAOFactory.getConnection());
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
-        }
+            als = new AlumnosDAO().getAll();
+
         tabAlumnos.getItems().setAll(als);
     }
 
@@ -139,11 +137,8 @@ public class AlumnosController extends DBViewController implements Initializable
     private void findByExpediente() {
         int id = Integer.parseInt(txtBusqueda.getText());
         Alumnos als = new Alumnos();
-        try {
-            als = mySQLDAOFactory.getAlumnosDAO().get(mySQLDAOFactory.getConnection(), id);
-        } catch (SQLException e) {
-            errores.mostrar("Por favor,\nAñade el Número de expediente para poder buscar");
-        }
+            als = new AlumnosDAO().get(id, HibernateUtil.getSessionFactory().openSession());
+
         tabAlumnos.getItems().setAll(als);
     }
 
