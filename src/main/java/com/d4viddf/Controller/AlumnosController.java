@@ -13,6 +13,7 @@ import com.d4viddf.Error.Errores;
 import com.d4viddf.Tablas.Alumnos;
 import com.d4viddf.TablasDAO.AlumnosDAO;
 
+import com.d4viddf.TablasService.AlumnosService;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -79,7 +80,7 @@ public class AlumnosController extends DBViewController implements Initializable
 
     /**
      * Método que gestiona el evento del botón buscar.
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -93,27 +94,24 @@ public class AlumnosController extends DBViewController implements Initializable
         } else {
             if (selectedItem != null) {
                 switch (selectedItem) {
-                case "Número de expediente":
-                    findByExpediente();
-                    break;
-                case "DNI":
-                    findByDNI();
-                    break;
-                case "Nombre":
-                    findByRowLike(AlumnosDAO.ROW_NOMBRE);
-                    break;
-                case "Apellidos":
-                    findByRowLike(AlumnosDAO.ROW_APELLIDOS);
-                    break;
-                case "Año de nacimiento":
-                    findByAnho();
-                    break;
-                case "DNI de profesor":
-                    findByProfesor();
-                    break;
-                case "Todos":
-                    mostrar();
-                    break;
+                    case "Número de expediente":
+                        findByExpediente();
+                        break;
+                    case "DNI":
+                        findByDNI();
+                        break;
+                    case "Nombre":
+                        findByRowLike(AlumnosDAO.ROW_NOMBRE);
+                        break;
+                    case "Apellidos":
+                        findByRowLike(AlumnosDAO.ROW_APELLIDOS);
+                        break;
+                    case "Año de nacimiento":
+                        findByAnho();
+                        break;
+                    case "Todos":
+                        mostrar();
+                        break;
                 }
             } else
                 mostrar();
@@ -125,7 +123,7 @@ public class AlumnosController extends DBViewController implements Initializable
      */
     private void mostrar() {
         List<Alumnos> als = new ArrayList<>();
-            als = new AlumnosDAO().getAll();
+        als = new AlumnosService().findAll();
 
         tabAlumnos.getItems().setAll(als);
     }
@@ -137,7 +135,7 @@ public class AlumnosController extends DBViewController implements Initializable
     private void findByExpediente() {
         int id = Integer.parseInt(txtBusqueda.getText());
         Alumnos als = new Alumnos();
-            als = new AlumnosDAO().get(id, HibernateUtil.getSessionFactory().openSession());
+        als = new AlumnosDAO().get(id, HibernateUtil.getSessionFactory().openSession());
 
         tabAlumnos.getItems().setAll(als);
     }
@@ -148,25 +146,25 @@ public class AlumnosController extends DBViewController implements Initializable
     private void findByDNI() {
         List<Alumnos> als = new ArrayList<>();
         try {
-            als = mySQLDAOFactory.getAlumnosDAO().getByDNI(mySQLDAOFactory.getConnection(), txtBusqueda.getText());
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
+            als = mySQLDAOFactory.getAlumnosDAO().getByDNI(txtBusqueda.getText());
+        } catch (Exception e) {
+            errores.muestraError(e);
         }
         tabAlumnos.getItems().setAll(als);
     }
 
     /**
      * Método que muestra el alumno por el nombre o apellido introducido
-     * 
+     *
      * @param row
      */
     private void findByRowLike(String row) {
         List<Alumnos> als = new ArrayList<>();
         try {
-            als = mySQLDAOFactory.getAlumnosDAO().getByRowLike(mySQLDAOFactory.getConnection(), row,
+            als = mySQLDAOFactory.getAlumnosDAO().getByRowLike(row,
                     txtBusqueda.getText());
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
+        } catch (Exception e) {
+            errores.muestraError(e);
         }
         tabAlumnos.getItems().setAll(als);
     }
@@ -177,30 +175,17 @@ public class AlumnosController extends DBViewController implements Initializable
     private void findByAnho() {
         List<Alumnos> als = new ArrayList<>();
         try {
-            als = mySQLDAOFactory.getAlumnosDAO().getByYear(mySQLDAOFactory.getConnection(), txtBusqueda.getText());
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
+            als = mySQLDAOFactory.getAlumnosDAO().getByYear(txtBusqueda.getText());
+        } catch (Exception e) {
+            errores.muestraError(e);
         }
         tabAlumnos.getItems().setAll(als);
     }
 
-    /**
-     * Método que muestra a los alumnos que tengan como profesor en alguna
-     * asignatura matriculada
-     */
-    private void findByProfesor() {
-        List<Alumnos> als = new ArrayList<>();
-        try {
-            als = mySQLDAOFactory.getAlumnosDAO().getByProfesor(mySQLDAOFactory.getConnection(), txtBusqueda.getText());
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
-        }
-        tabAlumnos.getItems().setAll(als);
-    }
 
     /**
      * Método para crear un alumno
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -211,18 +196,18 @@ public class AlumnosController extends DBViewController implements Initializable
             errores.mostrar("Por favor,\nRellene todos los datos del alumno");
         } else
             try {
-                AlumnosDAO alm = new AlumnosDAO();
-                alm.insertar(mySQLDAOFactory.getConnection(), txtNombre.getText().toString(),
-                        txtApellidos.getText().toString(), txtDNI.getText().toString(),
-                        Integer.parseInt(txtNum.getText().toString()), fecha.getValue());
+                Alumnos alumnos = new Alumnos(Integer.parseInt(txtNum.getText().toString()), txtDNI.getText().toString(), txtNombre.getText().toString(),
+                        txtApellidos.getText().toString(), LocalDate.parse(fecha.getValue().toString()));
+                AlumnosService alumnosService = new AlumnosService();
+                alumnosService.save(alumnos);
             } catch (Exception e) {
-                errores.muestraError(e);
+
             }
     }
 
     /**
      * Método para abrir el archivo del cuál insertar datos a la base de datos
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -237,7 +222,7 @@ public class AlumnosController extends DBViewController implements Initializable
 
     /**
      * Método para exportar la tabla Alumnos en un fichero JSON
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -245,17 +230,17 @@ public class AlumnosController extends DBViewController implements Initializable
         if (path.getText().isEmpty()) {
             guardar();
             try {
-                mySQLDAOFactory.getAlumnosDAO().exportar(mySQLDAOFactory.getConnection(), path.getText().toString());
+                mySQLDAOFactory.getAlumnosDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
-            } catch (SQLException e) {
-                errores.muestraErrorSQL(e);
+            } catch (Exception e) {
+                errores.muestraError(e);
             }
         } else {
             try {
-                mySQLDAOFactory.getAlumnosDAO().exportar(mySQLDAOFactory.getConnection(), path.getText().toString());
+                mySQLDAOFactory.getAlumnosDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
-            } catch (SQLException e) {
-                errores.muestraErrorSQL(e);
+            } catch (Exception e) {
+                errores.muestraError(e);
             }
 
         }
@@ -277,16 +262,16 @@ public class AlumnosController extends DBViewController implements Initializable
     /**
      * Método para importar desde un fichero JSON los datos de un alumno para la
      * tabla Alumno
-     * 
+     *
      * @param ae
      */
     @FXML
     private void importar(ActionEvent ae) {
+        AlumnosService alumnosService = new AlumnosService();
         if (path.getText().isEmpty()) {
             abrir(ae);
             try {
-                mySQLDAOFactory.getAlumnosDAO().insertarLote(mySQLDAOFactory.getConnection(),
-                        path.getText().toString());
+                alumnosService.insertAll(path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
             } catch (SQLException se) {
                 errores.muestraErrorSQL(se);
@@ -295,8 +280,7 @@ public class AlumnosController extends DBViewController implements Initializable
             }
         } else {
             try {
-                mySQLDAOFactory.getAlumnosDAO().insertarLote(mySQLDAOFactory.getConnection(),
-                        path.getText().toString());
+                alumnosService.insertAll(path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
             } catch (SQLException se) {
                 errores.muestraErrorSQL(se);

@@ -2,10 +2,12 @@ package com.d4viddf.Tablas;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 @Entity
 @Table (name = "imparten")
+@IdClass(ImpartenId.class)
 public class Imparten {
     @Id
     public int profesor;

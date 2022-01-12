@@ -18,5 +18,6 @@
         <mapping class="com.d4viddf.Tablas.Asignaturas" />
         <mapping class="com.d4viddf.Tablas.Departamentos" />
         <mapping class="com.d4viddf.Tablas.Profesores" />
+
     </session-factory>
 </hibernate-configuration>

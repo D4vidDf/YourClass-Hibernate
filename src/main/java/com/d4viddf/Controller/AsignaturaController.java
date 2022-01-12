@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
 import com.d4viddf.Tablas.Asignaturas;
 import com.d4viddf.TablasDAO.AlumnosDAO;
 import com.d4viddf.TablasDAO.AsignaturasDAO;
 
+import com.d4viddf.TablasService.AsignaturasService;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -105,10 +107,11 @@ public class AsignaturaController extends DBViewController implements Initializa
      */
     private void mostrar() {
         List<Asignaturas> asg = new ArrayList<>();
+        AsignaturasService asignaturasService = new AsignaturasService();
         try {
-            asg = mySQLDAOFactory.getAsignaturasDAO().getAll(mySQLDAOFactory.getConnection());
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
+            asg = asignaturasService.findAll();
+        } catch (Exception e) {
+            errores.muestraError(e);
         }
         tabAlumnos.getItems().setAll(asg);
     }
@@ -120,9 +123,10 @@ public class AsignaturaController extends DBViewController implements Initializa
     private void findByID() {
         int id = Integer.parseInt(txtBusqueda.getText());
         Asignaturas asg = new Asignaturas();
+        AsignaturasService asignaturasService = new AsignaturasService();
         try {
-            asg = mySQLDAOFactory.getAsignaturasDAO().get(mySQLDAOFactory.getConnection(), id);
-        } catch (SQLException e) {
+            asg = asignaturasService.findById(id);
+        } catch (Exception e) {
             errores.mostrar("Por favor,\nAñade el Número de expediente para poder buscar");
         }
         tabAlumnos.getItems().setAll(asg);
@@ -136,9 +140,9 @@ public class AsignaturaController extends DBViewController implements Initializa
     private void findByRowLike(String row) {
         List<Asignaturas> asg = new ArrayList<>();
         try {
-            asg = mySQLDAOFactory.getAsignaturasDAO().getByRowLike(mySQLDAOFactory.getConnection(), row,
+            asg = mySQLDAOFactory.getAsignaturasDAO().getByRowLike( row,
                     txtBusqueda.getText());
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         tabAlumnos.getItems().setAll(asg);
@@ -154,8 +158,9 @@ public class AsignaturaController extends DBViewController implements Initializa
     @FXML
     private void crear(ActionEvent ae) {
         try {
-            AsignaturasDAO asg = new AsignaturasDAO();
-            asg.insertar(mySQLDAOFactory.getConnection(),Integer.parseInt(txtNum.getText().toString()), txtNombre.getText().toString(), txtCurso.getText().toString());
+            Asignaturas asignaturas = new Asignaturas(txtNombre.getText().toString(), Integer.parseInt(txtNum.getText().toString()),  txtCurso.getText().toString());
+            AsignaturasService asignaturasService = new AsignaturasService();
+            asignaturasService.save(asignaturas);
         } catch (Exception e) {
             errores.muestraError(e);
         }
@@ -186,17 +191,17 @@ public class AsignaturaController extends DBViewController implements Initializa
         if (path.getText().isEmpty()) {
             guardar();
             try {
-                mySQLDAOFactory.getAsignaturasDAO().exportar(mySQLDAOFactory.getConnection(), path.getText().toString());
+                mySQLDAOFactory.getAsignaturasDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
-            } catch (SQLException e) {
-                errores.muestraErrorSQL(e);
+            } catch (Exception e) {
+                errores.muestraError(e);
             }
         } else {
             try {
-                mySQLDAOFactory.getAsignaturasDAO().exportar(mySQLDAOFactory.getConnection(), path.getText().toString());
+                mySQLDAOFactory.getAsignaturasDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
-            } catch (SQLException e) {
-                errores.muestraErrorSQL(e);
+            } catch (Exception e) {
+                errores.muestraError(e);
             }
 
         }
@@ -223,11 +228,11 @@ public class AsignaturaController extends DBViewController implements Initializa
      */
     @FXML
     private void importar(ActionEvent ae) {
+        AsignaturasService asignaturasService = new AsignaturasService();
         if (path.getText().isEmpty()) {
             abrir(ae);
             try {
-                mySQLDAOFactory.getAsignaturasDAO().insertarLote(mySQLDAOFactory.getConnection(),
-                        path.getText().toString());
+                asignaturasService.insertAll(path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
             } catch (SQLException se) {
                 errores.muestraErrorSQL(se);
@@ -236,8 +241,7 @@ public class AsignaturaController extends DBViewController implements Initializa
             }
         } else {
             try {
-                mySQLDAOFactory.getAsignaturasDAO().insertarLote(mySQLDAOFactory.getConnection(),
-                        path.getText().toString());
+                asignaturasService.insertAll(path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
             } catch (SQLException se) {
                 errores.muestraErrorSQL(se);

@@ -1,13 +1,13 @@
 package com.d4viddf.Tablas;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
 @Table(name = "alumnos")
 public class Alumnos {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int expediente;
     @Column(name = "dni", nullable = false)
     private String DNI;
@@ -16,12 +16,12 @@ public class Alumnos {
     @Column(name = "apellidos", nullable = false)
     private String apellidos;
     @Column(name = "fecha_nacimiento", nullable = false)
-    private Date nacimiento;
+    private LocalDate nacimiento;
 
     public Alumnos() {
     }
 
-    public Alumnos(int expediente, String DNI, String nombre, String apellidos, Date nacimiento) {
+    public Alumnos(int expediente, String DNI, String nombre, String apellidos, LocalDate nacimiento) {
         this.expediente = expediente;
         this.DNI = DNI;
         this.nombre = nombre;
@@ -81,7 +81,7 @@ public class Alumnos {
     /**
      * @return LocalDate
      */
-    public Date getNacimiento() {
+    public LocalDate getNacimiento() {
         return this.nacimiento;
     }
 
@@ -89,7 +89,7 @@ public class Alumnos {
     /**
      * @param nacimiento
      */
-    public void setNacimiento(Date nacimiento) {
+    public void setNacimiento(LocalDate nacimiento) {
         this.nacimiento = nacimiento;
     }
 
