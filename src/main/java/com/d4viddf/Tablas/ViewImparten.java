@@ -1,12 +1,40 @@
 package com.d4viddf.Tablas;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.hibernate.annotations.Immutable;
 
+import javax.persistence.*;
+
+@Entity
+@Immutable
 public class ViewImparten {
-    public int Expedientealumno, CodProf, IDasignatura;
-    public String CursoImparten, Nombrealumno, Apellidosalumno, DNIalumno, DNIprofesor, NombreProfesor,
-            ApellidosProfesor, Nombredepartamento, Nombreasignatura, Cursoasignatura;
+    @Id
+    @GeneratedValue (strategy = GenerationType.AUTO)
+    @Column
+    public int Expedientealumno;
+    @Column
+    public int CodProf;
+    @Column
+    public int IDasignatura;
+    @Column
+    public String CursoImparten;
+    @Column
+    public String Nombrealumno;
+    @Column
+    public String Apellidosalumno;
+    @Column
+    public String DNIalumno;
+    @Column
+    public String DNIprofesor;
+    @Column
+    public String NombreProfesor;
+    @Column
+    public String ApellidosProfesor;
+    @Column
+    public String Nombredepartamento;
+    @Column
+    public String Nombreasignatura;
+    @Column
+    public String Cursoasignatura;
 
     
     /** 

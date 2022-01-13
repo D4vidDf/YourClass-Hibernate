@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.d4viddf.Error.Errores;
+import com.d4viddf.Tablas.Alumnos;
 import com.d4viddf.Tablas.Imparten;
 
+import org.hibernate.Session;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,6 +26,24 @@ public class ImpartenDAO{
     static Scanner teclado = new Scanner(System.in);
     private static FileWriter file;
 
+    public void save (Imparten entity, Session session){
+        session.save(entity);
+    }
+
+    public void persist(Imparten entity,
+                        Session session) {
+        session.persist(entity);
+    }
+
+    public void update(Imparten entity, Session
+            session) {
+        session.update(entity);
+    }
+
+    public void delete(Imparten entity, Session
+            session) {
+        session.delete(entity);
+    }
     /**
      * Método que devuelve null ya que no es utilizado
      * 

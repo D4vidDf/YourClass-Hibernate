@@ -8,8 +8,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
 import com.d4viddf.Tablas.ViewImparten;
+import org.hibernate.Session;
 
 /**
  * Clase DAO de la vista ViewImparten que implementa la fábrica DAO
@@ -50,36 +52,12 @@ public class ViewImpartenDAO {
      * @return List<ViewImparten>
      */
 
-    public List<ViewImparten> getAll(Connection conn) {
+    public List<ViewImparten> getAll(Session conn) {
         List<ViewImparten> lista = null;
-        try {
-            Statement s = (Statement) conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs = ((java.sql.Statement) s).executeQuery("SELECT * FROM ViewImparten;");
-            int totalRows = 0;
-            rs.last();
-            totalRows = rs.getRow();
-            rs.beforeFirst();
-            lista = new ArrayList<ViewImparten>(totalRows);
-            while (rs.next()) {
-                ViewImparten as = new ViewImparten();
-                as.setCursoImparten(rs.getString(1));
-                as.setExpedientealumno(rs.getInt(2));
-                as.setNombrealumno(rs.getString(3));
-                as.setApellidosalumno(rs.getString(4));
-                as.setDNIalumno(rs.getString(5));
-                as.setCodProf(rs.getInt(6));
-                as.setDNIprofesor(rs.getString(7));
-                as.setNombreProfesor(rs.getString(8));
-                as.setApellidosProfesor(rs.getString(9));
-                as.setNombredepartamento(rs.getString(10));
-                as.setIDasignatura(rs.getInt(11));
-                as.setNombreasignatura(rs.getString(12));
-                as.setCursoasignatura(rs.getString(13));
-                lista.add(as);
-            }
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
+        try  {
+            lista = (List<ViewImparten>) conn.createQuery("FROM ViewImparten").getResultList();
+        } catch (Exception e) {
+            errores.muestraError(e);
         }
         return lista;
     }

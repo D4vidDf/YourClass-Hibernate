@@ -14,6 +14,7 @@ import com.d4viddf.TablasDAO.AlumnosDAO;
 import com.d4viddf.TablasDAO.ImpartenDAO;
 import com.d4viddf.TablasDAO.ViewImpartenDAO;
 
+import com.d4viddf.TablasService.ViewImpartenService;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -30,6 +31,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 public class ImpartenController extends DBViewController implements Initializable {
+    ViewImpartenService viewImpartenService = new ViewImpartenService();
     Errores errores = new Errores();
     @FXML
     private TableView<ViewImparten> tabAlumnos;
@@ -156,9 +158,9 @@ public class ImpartenController extends DBViewController implements Initializabl
     private void mostrar() {
         List<ViewImparten> als = new ArrayList<>();
         try {
-            als = mySQLDAOFactory.getViewImpartenDAO().getAll(mySQLDAOFactory.getConnection());
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
+            als = viewImpartenService.findAll();
+        } catch (Exception e) {
+            errores.muestraError(e);
         }
         tabAlumnos.getItems().setAll(als);
     }

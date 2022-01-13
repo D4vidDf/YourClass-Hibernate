@@ -1,8 +1,9 @@
 package com.d4viddf.Tablas;
 
 import javax.persistence.Id;
+import java.io.Serializable;
 
-public class ImpartenId {
+public class ImpartenId implements Serializable {
     public int profesor;
     public int asignatura;
     public int alumno;

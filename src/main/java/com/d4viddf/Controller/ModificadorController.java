@@ -7,6 +7,8 @@ import com.d4viddf.Factory.DAOFactory;
 import com.d4viddf.Tablas.Borrar;
 import com.d4viddf.Tablas.Crear;
 
+import com.d4viddf.TablasDAO.AsignaturasDAO;
+import com.d4viddf.TablasService.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -55,19 +57,11 @@ public class ModificadorController extends DBViewController implements Initializ
      */
     @FXML
     public void borrar(ActionEvent ae) {
-        prompt.appendText("------------------------------------------------------------------------------\n");
-        prompt.appendText("Iniciando el borrado de las tablas\n");
-        try {
-            progress.setProgress(0.1);
-            progress.setProgress(0.5);
-            Borrar.borr(mySQLDAOFactory.getConnection());
-            prompt.appendText("Tablas vaciadas correctamente\n");
-            progress.setProgress(1);
-        } catch (Exception e) {
-            prompt.appendText("No se han podido vaciar las tablas:\n");
-            progress.setProgress(1);
-            prompt.appendText(String
-                    .valueOf("Causa: " + e.getCause() + "\nClase: " + e.getClass() + "\nMensaje: " + e.getMessage()));
-        }
+        new ImpartenService().deleteAll();
+        new DepartamentosService().deleteAll();
+        new AlumnosService().deleteAll();
+        new ProfesoresService().deleteAll();
+        new AsignaturasService().deleteAll();
+
     }
 }

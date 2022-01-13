@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
 import com.d4viddf.Tablas.Departamentos;
 import com.d4viddf.TablasDAO.DepartamentosDAO;
 
+import com.d4viddf.TablasService.DepartamentosService;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -27,6 +29,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 public class DepartamentoController extends DBViewController implements Initializable {
+    DepartamentosService departamentosService = new DepartamentosService();
     Errores errores = new Errores();
     @FXML
     private TableView<Departamentos> tabDepartamentos;
@@ -59,7 +62,7 @@ public class DepartamentoController extends DBViewController implements Initiali
         colPresupuesto.setCellValueFactory(new PropertyValueFactory<Departamentos, String>("presupuesto"));
         colDesc.setCellValueFactory(new PropertyValueFactory<Departamentos, String>("desc"));
 
-        cbxBuscarPor.getItems().setAll("Número departamento", "Nombre", "Presupuesto", "Profesor", "Todos");
+        cbxBuscarPor.getItems().setAll("Número departamento", "Nombre", "Presupuesto", "Todos");
         cbxBuscarPor.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> selected, String oldI, String newI) {
@@ -70,7 +73,7 @@ public class DepartamentoController extends DBViewController implements Initiali
 
     /**
      * Método que gestiona el evento del botón buscar.
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -84,21 +87,18 @@ public class DepartamentoController extends DBViewController implements Initiali
         } else {
             if (selectedItem != null) {
                 switch (selectedItem) {
-                case "Número departamento":
-                    findByDepartamento();
-                    break;
-                case "Nombre":
-                    findByName();
-                    break;
-                case "Profesor":
-                    findByProfesor();
-                    break;
-                case "Presupuesto":
-                    findByPresupuesto();
-                    break;
-                case "Todos":
-                    mostrar();
-                    break;
+                    case "Número departamento":
+                        findByDepartamento();
+                        break;
+                    case "Nombre":
+                        findByName();
+                        break;
+                    case "Presupuesto":
+                        findByPresupuesto();
+                        break;
+                    case "Todos":
+                        mostrar();
+                        break;
                 }
             } else
                 mostrar();
@@ -111,9 +111,9 @@ public class DepartamentoController extends DBViewController implements Initiali
     private void mostrar() {
         List<Departamentos> als = new ArrayList<>();
         try {
-            als = mySQLDAOFactory.getDepartamentosDAO().getAll(mySQLDAOFactory.getConnection());
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
+            als = departamentosService.findAll();
+        } catch (Exception e) {
+            errores.muestraError(e);
         }
         tabDepartamentos.getItems().setAll(als);
     }
@@ -123,16 +123,20 @@ public class DepartamentoController extends DBViewController implements Initiali
      * tabla
      */
     private void findByDepartamento() {
-        int id = Integer.parseInt(txtBusqueda.getText());
-        Departamentos departamentos = new Departamentos();
-
-        try {
-            departamentos = mySQLDAOFactory.getDepartamentosDAO().get(mySQLDAOFactory.getConnection(), id);
-        } catch (SQLException e) {
+        if (txtBusqueda.getText().isEmpty()) {
             errores.mostrar("Por favor,\nAñade el Número del departamento para poder buscar");
-        }
-        tabDepartamentos.getItems().setAll(departamentos);
 
+        } else {
+            int id = Integer.parseInt(txtBusqueda.getText());
+            Departamentos departamentos = new Departamentos();
+
+            try {
+                departamentos = departamentosService.findById(id);
+            } catch (Exception e) {
+                errores.muestraError(e);
+            }
+            tabDepartamentos.getItems().setAll(departamentos);
+        }
     }
 
     /**
@@ -140,12 +144,10 @@ public class DepartamentoController extends DBViewController implements Initiali
      * TextField en la tabla
      */
     private void findByPresupuesto() {
-        int id = Integer.parseInt(txtBusqueda.getText());
+        float id = Float.parseFloat(txtBusqueda.getText());
         List<Departamentos> als = new ArrayList<>();
         try {
-            als = mySQLDAOFactory.getDepartamentosDAO().getByPresupuesto(mySQLDAOFactory.getConnection(), id);
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
+            als = mySQLDAOFactory.getDepartamentosDAO().getByPresupuesto( id);
         } catch (Exception e) {
             errores.muestraError(e);
         }
@@ -154,41 +156,22 @@ public class DepartamentoController extends DBViewController implements Initiali
 
     /**
      * Método que muestra el departamento por el nombre introducido
-     * 
-     * @param row
      */
     private void findByName() {
         List<Departamentos> dep = new ArrayList<>();
         try {
-            dep = mySQLDAOFactory.getDepartamentosDAO().getByName(mySQLDAOFactory.getConnection(),
-                    txtBusqueda.getText().toString());
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
-        } catch (Exception e) {
+            dep = mySQLDAOFactory.getDepartamentosDAO().getByName(txtBusqueda.getText().toString());
+        }catch (Exception e) {
             errores.muestraError(e);
         }
         tabDepartamentos.getItems().setAll(dep);
     }
 
-    /**
-     * Método que muestra el departamento de un profesor
-     */
-    private void findByProfesor() {
-        List<Departamentos> dep = new ArrayList<>();
-        try {
-            dep = mySQLDAOFactory.getDepartamentosDAO().getByProfesor(mySQLDAOFactory.getConnection(),
-                    txtBusqueda.getText().toString());
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
-        } catch (Exception e) {
-            errores.muestraError(e);
-        }
-        tabDepartamentos.getItems().setAll(dep);
-    }
+
 
     /**
      * Método para crear un departamento
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -198,10 +181,12 @@ public class DepartamentoController extends DBViewController implements Initiali
             errores.mostrar("Por favor,\nRellene todos los datos del alumno");
         } else
             try {
-                DepartamentosDAO alm = new DepartamentosDAO();
-                alm.insertar(mySQLDAOFactory.getConnection(), Integer.parseInt(txtID.getText().toString()),
-                        txtNombre.getText().toString(), Integer.parseInt(txtPresupuesto.getText().toString()),
-                        txtDesc.getText().toString());
+                Departamentos departamentos = new Departamentos();
+                departamentos.setId(Integer.parseInt(txtID.getText().toString()));
+                departamentos.setNombre(txtNombre.getText().toString());
+                departamentos.setPresupuesto(Float.parseFloat(txtPresupuesto.getText().toString()));
+                departamentos.setDesc(txtDesc.getText().toString());
+                departamentosService.save(departamentos);
             } catch (Exception e) {
                 errores.muestraError(e);
             }
@@ -209,7 +194,7 @@ public class DepartamentoController extends DBViewController implements Initiali
 
     /**
      * Método para abrir el archivo del cuál insertar datos a la base de datos
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -224,7 +209,7 @@ public class DepartamentoController extends DBViewController implements Initiali
 
     /**
      * Método para exportar la tabla Departamentos en un fichero JSON
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -232,19 +217,19 @@ public class DepartamentoController extends DBViewController implements Initiali
         if (path.getText().isEmpty()) {
             guardar();
             try {
-                mySQLDAOFactory.getDepartamentosDAO().exportar(mySQLDAOFactory.getConnection(),
+                mySQLDAOFactory.getDepartamentosDAO().exportar(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
-            } catch (SQLException e) {
-                errores.muestraErrorSQL(e);
+            } catch (Exception e) {
+                errores.muestraError(e);
             }
         } else {
             try {
-                mySQLDAOFactory.getDepartamentosDAO().exportar(mySQLDAOFactory.getConnection(),
+                mySQLDAOFactory.getDepartamentosDAO().exportar(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
-            } catch (SQLException e) {
-                errores.muestraErrorSQL(e);
+            } catch (Exception e) {
+                errores.muestraError(e);
             }
 
         }
@@ -266,7 +251,7 @@ public class DepartamentoController extends DBViewController implements Initiali
     /**
      * Método para importar desde un fichero JSON los datos de un departamento para
      * la tabla departamentos
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -274,23 +259,19 @@ public class DepartamentoController extends DBViewController implements Initiali
         if (path.getText().isEmpty()) {
             abrir(ae);
             try {
-                mySQLDAOFactory.getDepartamentosDAO().insertarLote(mySQLDAOFactory.getConnection(),
+                mySQLDAOFactory.getDepartamentosDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
-            } catch (SQLException se) {
-                errores.muestraErrorSQL(se);
             } catch (Exception e) {
                 errores.muestraError(e);
             }
         } else {
             try {
-                mySQLDAOFactory.getDepartamentosDAO().insertarLote(mySQLDAOFactory.getConnection(),
+                mySQLDAOFactory.getDepartamentosDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
-            } catch (SQLException se) {
-                errores.muestraErrorSQL(se);
-            } catch (Exception e) {
-                errores.muestraError(e);
+            } catch (Exception se) {
+                errores.muestraError(se);
             }
 
         }
