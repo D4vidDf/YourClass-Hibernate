@@ -1,36 +1,30 @@
 package com.d4viddf.Controller;
 
-import java.io.File;
-import java.net.URL;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-
+import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
-import com.d4viddf.Tablas.Alumnos;
 import com.d4viddf.Tablas.Profesores;
-import com.d4viddf.TablasDAO.AlumnosDAO;
 import com.d4viddf.TablasDAO.ProfesoresDAO;
-
+import com.d4viddf.TablasService.ProfesoresService;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+
 public class ProfesorController extends DBViewController implements Initializable {
+    ProfesoresService profesoresService = new ProfesoresService();
     Errores errores = new Errores();
     @FXML
     private TableView<Profesores> tabAlumnos;
@@ -68,7 +62,7 @@ public class ProfesorController extends DBViewController implements Initializabl
         colDNI.setCellValueFactory(new PropertyValueFactory<Profesores, String>("DNI"));
         colNombre.setCellValueFactory(new PropertyValueFactory<Profesores, String>("nombre"));
         colApellidos.setCellValueFactory(new PropertyValueFactory<Profesores, String>("apellidos"));
-        colNac.setCellValueFactory(new PropertyValueFactory<Profesores, LocalDate>("nacimiento"));
+        colNac.setCellValueFactory(new PropertyValueFactory<Profesores, LocalDate>("fecha_nacimiento"));
         colDepar.setCellValueFactory(new PropertyValueFactory<Profesores, Integer>("departamento"));
 
         cbxBuscarPor.getItems().setAll("Código de profesor", "DNI", "Nombre", "Apellidos", "Año de nacimiento",
@@ -83,7 +77,7 @@ public class ProfesorController extends DBViewController implements Initializabl
 
     /**
      * Método que gestiona el evento del botón buscar.
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -96,28 +90,32 @@ public class ProfesorController extends DBViewController implements Initializabl
             errores.mostrar("Por favor,\nIntroduce un valor para realizar la búsqueda");
         } else {
             if (selectedItem != null) {
+                System.out.println(selectedItem);
                 switch (selectedItem) {
-                case "Código del profesor":
-                    findByID();
-                    break;
-                case "DNI":
-                    findByDNI();
-                    break;
-                case "Nombre":
-                    findByRowLike(ProfesoresDAO.ROW_NOMBRE);
-                    break;
-                case "Apellidos":
-                    findByRowLike(ProfesoresDAO.ROW_APELLIDOS);
-                    break;
-                case "Año de nacimiento":
-                    findByAnho();
-                    break;
-                case "Departamento":
-                    findByRowLike(ProfesoresDAO.ROW_DEPARTAMENTO);
-                    break;
-                case "Todos":
-                    mostrar();
-                    break;
+                    case "Código de profesor":
+                        findByID();
+                        break;
+                    case "DNI":
+                        findByDNI();
+                        break;
+                    case "Nombre":
+                        findByRowLike(ProfesoresDAO.ROW_NOMBRE);
+                        break;
+                    case "Apellidos":
+                        findByRowLike(ProfesoresDAO.ROW_APELLIDOS);
+                        break;
+                    case "Año de nacimiento":
+                        findByAnho();
+                        break;
+                    case "Departamento":
+                        findByRowLike(ProfesoresDAO.ROW_DEPARTAMENTO);
+                        break;
+                    case "Todos":
+                        mostrar();
+                        break;
+                    default:
+                        System.out.println("Hola");
+                        break;
                 }
             } else
                 mostrar();
@@ -125,15 +123,17 @@ public class ProfesorController extends DBViewController implements Initializabl
     }
 
     private void findByID() {
-
         int id = Integer.parseInt(txtBusqueda.getText());
-        Profesores als = new Profesores();
+        Profesores profesores = new Profesores();
         try {
-            als = mySQLDAOFactory.getProfesoresDAO().get(mySQLDAOFactory.getConnection(), id);
-        } catch (SQLException e) {
-            errores.mostrar("Por favor,\nAñade el Código del profesor para poder buscar");
+            profesores = profesoresService.findById(id);
+            System.out.println(profesores.toString());
+        } catch (Exception e) {
+            errores.muestraError(e);
         }
-        tabAlumnos.getItems().setAll(als);
+        tabAlumnos.getItems().setAll(profesores);
+
+
     }
 
     /**
@@ -142,9 +142,9 @@ public class ProfesorController extends DBViewController implements Initializabl
     private void mostrar() {
         List<Profesores> pro = new ArrayList<>();
         try {
-            pro = mySQLDAOFactory.getProfesoresDAO().getAll(mySQLDAOFactory.getConnection());
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
+            pro = mySQLDAOFactory.getProfesoresDAO().getAll(HibernateUtil.getSessionFactory().openSession());
+        } catch (Exception e) {
+            errores.muestraError(e);
         }
         tabAlumnos.getItems().setAll(pro);
     }
@@ -153,53 +153,59 @@ public class ProfesorController extends DBViewController implements Initializabl
      * Método que muestra al Alumno que coincida con el DNI del campo TextField
      */
     private void findByDNI() {
-        Profesores pro = new Profesores();
+        List<Profesores> profesores = new ArrayList<>();
         try {
-            pro = mySQLDAOFactory.getProfesoresDAO().getByDNI(mySQLDAOFactory.getConnection(), txtBusqueda.getText());
-        } catch (SQLException e) {
+            profesores = mySQLDAOFactory.getProfesoresDAO().getByDNI(txtBusqueda.getText());
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        tabAlumnos.getItems().setAll(pro);
+        tabAlumnos.getItems().setAll(profesores);
 
     }
 
     /**
      * Método que muestra el alumno por el nombre o apellido introducido
-     * 
+     *
      * @param row
      */
     private void findByRowLike(String row) {
-        
-          List<Profesores> als = new ArrayList<>(); try { als =
-          mySQLDAOFactory.getProfesoresDAO().getByRowLike(mySQLDAOFactory.getConnection(),
-          row, txtBusqueda.getText()); } catch (SQLException e) { e.printStackTrace();
-          } tabAlumnos.getItems().setAll(als);
+
+        List<Profesores> als = new ArrayList<>();
+        try {
+            als =
+                    mySQLDAOFactory.getProfesoresDAO().getByRowLike(row, txtBusqueda.getText());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        tabAlumnos.getItems().setAll(als);
     }
 
     /**
      * Mëtodo que muestra a los Alumnos que coincidan con la fecha de nacimiento
      */
     private void findByAnho() {
-        List<Profesores> als = new ArrayList<>(); try { als =
-         mySQLDAOFactory.getProfesoresDAO().getByYear(mySQLDAOFactory.getConnection(),
-          txtBusqueda.getText()); } catch (SQLException e) { e.printStackTrace(); }
-          tabAlumnos.getItems().setAll(als);
-         
+        List<Profesores> als = new ArrayList<>();
+        try {
+            als =
+                    mySQLDAOFactory.getProfesoresDAO().getByYear(txtBusqueda.getText());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        tabAlumnos.getItems().setAll(als);
+
     }
 
     /**
      * Método para crear un alumno
-     * 
+     *
      * @param ae
      */
     @FXML
     private void crear(ActionEvent ae) {
 
         try {
-            ProfesoresDAO alm = new ProfesoresDAO();
-            alm.insertar(mySQLDAOFactory.getConnection(), txtNombre.getText().toString(),
-                    txtApellidos.getText().toString(), txtDNI.getText().toString(),
-                    Integer.parseInt(txtNum.getText().toString()), fecha.getValue(), txtDep.getText().toString());
+            Profesores profesores = new Profesores(Integer.parseInt(txtDep.getText().toString()), Integer.parseInt(txtNum.getText().toString()), txtDNI.getText().toString(), txtNombre.getText().toString(), txtApellidos.getText().toString(), LocalDate.parse(fecha.getValue().toString()));
+            profesoresService.save(profesores);
         } catch (Exception e) {
             errores.muestraError(e);
         }
@@ -208,7 +214,7 @@ public class ProfesorController extends DBViewController implements Initializabl
 
     /**
      * Método para abrir el archivo del cuál insertar datos a la base de datos
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -223,7 +229,7 @@ public class ProfesorController extends DBViewController implements Initializabl
 
     /**
      * Método para exportar la tabla Alumnos en un fichero JSON
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -231,17 +237,17 @@ public class ProfesorController extends DBViewController implements Initializabl
         if (path.getText().isEmpty()) {
             guardar();
             try {
-                mySQLDAOFactory.getProfesoresDAO().exportar(mySQLDAOFactory.getConnection(), path.getText().toString());
+                mySQLDAOFactory.getProfesoresDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
-            } catch (SQLException e) {
-                errores.muestraErrorSQL(e);
+            } catch (Exception e) {
+                errores.muestraError(e);
             }
         } else {
             try {
-                mySQLDAOFactory.getProfesoresDAO().exportar(mySQLDAOFactory.getConnection(), path.getText().toString());
+                mySQLDAOFactory.getProfesoresDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
-            } catch (SQLException e) {
-                errores.muestraErrorSQL(e);
+            } catch (Exception e) {
+                errores.muestraError(e);
             }
 
         }
@@ -263,7 +269,7 @@ public class ProfesorController extends DBViewController implements Initializabl
     /**
      * Método para importar desde un fichero JSON los datos de un alumno para la
      * tabla Alumno
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -271,21 +277,17 @@ public class ProfesorController extends DBViewController implements Initializabl
         if (path.getText().isEmpty()) {
             abrir(ae);
             try {
-                mySQLDAOFactory.getProfesoresDAO().insertarLote(mySQLDAOFactory.getConnection(),
+                mySQLDAOFactory.getProfesoresDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
-            } catch (SQLException se) {
-                errores.muestraErrorSQL(se);
             } catch (Exception e) {
                 errores.muestraError(e);
             }
         } else {
             try {
-                mySQLDAOFactory.getProfesoresDAO().insertarLote(mySQLDAOFactory.getConnection(),
+                mySQLDAOFactory.getProfesoresDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
-            } catch (SQLException se) {
-                errores.muestraErrorSQL(se);
             } catch (Exception e) {
                 errores.muestraError(e);
             }

@@ -32,6 +32,7 @@ import javafx.stage.Stage;
 
 public class AlumnosController extends DBViewController implements Initializable {
     Errores errores = new Errores();
+    AlumnosService alumnosService = new AlumnosService();
     @FXML
     private TableView<Alumnos> tabAlumnos;
     @FXML
@@ -69,7 +70,7 @@ public class AlumnosController extends DBViewController implements Initializable
         colNac.setCellValueFactory(new PropertyValueFactory<Alumnos, LocalDate>("nacimiento"));
 
         cbxBuscarPor.getItems().setAll("Número de expediente", "DNI", "Nombre", "Apellidos", "Año de nacimiento",
-                "DNI de profesor", "Todos");
+                "Todos");
         cbxBuscarPor.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> selected, String oldI, String newI) {
@@ -123,7 +124,7 @@ public class AlumnosController extends DBViewController implements Initializable
      */
     private void mostrar() {
         List<Alumnos> als = new ArrayList<>();
-        als = new AlumnosService().findAll();
+        als = alumnosService.findAll();
 
         tabAlumnos.getItems().setAll(als);
     }
@@ -134,9 +135,7 @@ public class AlumnosController extends DBViewController implements Initializable
      */
     private void findByExpediente() {
         int id = Integer.parseInt(txtBusqueda.getText());
-        Alumnos als = new Alumnos();
-        als = new AlumnosDAO().get(id, HibernateUtil.getSessionFactory().openSession());
-
+        Alumnos als = new AlumnosDAO().get(id, HibernateUtil.getSessionFactory().openSession());
         tabAlumnos.getItems().setAll(als);
     }
 
@@ -190,15 +189,14 @@ public class AlumnosController extends DBViewController implements Initializable
      */
     @FXML
     private void crearalumno(ActionEvent ae) {
-        if (txtNombre.getText().toString().isBlank() || txtApellidos.getText().toString().isBlank()
-                || txtDNI.getText().toString().isBlank() || txtNum.getText().toString().isBlank()
+        if (txtNombre.getText().isBlank() || txtApellidos.getText().toString().isBlank()
+                || txtDNI.getText().isBlank() || txtNum.getText().toString().isBlank()
                 || fecha.getValue().equals("")) {
             errores.mostrar("Por favor,\nRellene todos los datos del alumno");
         } else
             try {
                 Alumnos alumnos = new Alumnos(Integer.parseInt(txtNum.getText().toString()), txtDNI.getText().toString(), txtNombre.getText().toString(),
                         txtApellidos.getText().toString(), LocalDate.parse(fecha.getValue().toString()));
-                AlumnosService alumnosService = new AlumnosService();
                 alumnosService.save(alumnos);
             } catch (Exception e) {
 
@@ -267,7 +265,6 @@ public class AlumnosController extends DBViewController implements Initializable
      */
     @FXML
     private void importar(ActionEvent ae) {
-        AlumnosService alumnosService = new AlumnosService();
         if (path.getText().isEmpty()) {
             abrir(ae);
             try {

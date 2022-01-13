@@ -50,7 +50,7 @@ public class Main extends Application {
         primaryStage.setTitle("YourClass");
         primaryStage.getIcons().add(new Image("/drawable/blackboard.png"));
         primaryStage.setScene(scene);
-        primaryStage.initStyle(StageStyle.TRANSPARENT);
+        primaryStage.initStyle(StageStyle.DECORATED);
         primaryStage.setResizable(false);
         primaryStage.show();
         /**

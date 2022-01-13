@@ -1,8 +1,10 @@
 package com.d4viddf.Tablas;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table(name = "alumnos")

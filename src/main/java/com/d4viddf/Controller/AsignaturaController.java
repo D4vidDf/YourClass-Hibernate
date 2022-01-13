@@ -30,6 +30,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 public class AsignaturaController extends DBViewController implements Initializable {
+    AsignaturasService asignaturasService = new AsignaturasService();
     Errores errores = new Errores();
     @FXML
     private TableView<Asignaturas> tabAlumnos;
@@ -107,7 +108,6 @@ public class AsignaturaController extends DBViewController implements Initializa
      */
     private void mostrar() {
         List<Asignaturas> asg = new ArrayList<>();
-        AsignaturasService asignaturasService = new AsignaturasService();
         try {
             asg = asignaturasService.findAll();
         } catch (Exception e) {
@@ -123,7 +123,6 @@ public class AsignaturaController extends DBViewController implements Initializa
     private void findByID() {
         int id = Integer.parseInt(txtBusqueda.getText());
         Asignaturas asg = new Asignaturas();
-        AsignaturasService asignaturasService = new AsignaturasService();
         try {
             asg = asignaturasService.findById(id);
         } catch (Exception e) {
@@ -159,7 +158,6 @@ public class AsignaturaController extends DBViewController implements Initializa
     private void crear(ActionEvent ae) {
         try {
             Asignaturas asignaturas = new Asignaturas(txtNombre.getText().toString(), Integer.parseInt(txtNum.getText().toString()),  txtCurso.getText().toString());
-            AsignaturasService asignaturasService = new AsignaturasService();
             asignaturasService.save(asignaturas);
         } catch (Exception e) {
             errores.muestraError(e);
@@ -228,7 +226,6 @@ public class AsignaturaController extends DBViewController implements Initializa
      */
     @FXML
     private void importar(ActionEvent ae) {
-        AsignaturasService asignaturasService = new AsignaturasService();
         if (path.getText().isEmpty()) {
             abrir(ae);
             try {

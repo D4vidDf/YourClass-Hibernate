@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch Launch",
+            "request": "launch",
+            "mainClass": "com.d4viddf.Launch",
+            "projectName": "sql_connection"
+        },
+        {
+            "type": "java",
             "name": "Launch Main",
             "request": "launch",
             "mainClass": "com.d4viddf.Main",
