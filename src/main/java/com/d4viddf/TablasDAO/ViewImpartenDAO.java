@@ -12,6 +12,7 @@ import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
 import com.d4viddf.Tablas.ViewImparten;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 /**
  * Clase DAO de la vista ViewImparten que implementa la fábrica DAO
@@ -33,7 +34,7 @@ public class ViewImpartenDAO {
     /**
      * Método que retorna null ya que no es necesario su implementación y es
      * generado por la fábrica
-     * 
+     *
      * @param con
      * @param id
      * @return ViewImparten
@@ -47,14 +48,14 @@ public class ViewImpartenDAO {
      * Método que devuelve un ArratList de ViewImparten con toda la información
      * disponible en la vista ViewImparten En caso de ocurrir una SQLException la
      * clase Errores() mostrará una ventana con la excepción manejada
-     * 
+     *
      * @param conn
      * @return List<ViewImparten>
      */
 
     public List<ViewImparten> getAll(Session conn) {
         List<ViewImparten> lista = null;
-        try  {
+        try {
             lista = (List<ViewImparten>) conn.createQuery("FROM ViewImparten").getResultList();
         } catch (Exception e) {
             errores.muestraError(e);
@@ -62,84 +63,5 @@ public class ViewImpartenDAO {
         return lista;
     }
 
-    /**
-     * Método que devuelve un ArrayList de ViewImparten con todos los campos que
-     * cooincidan con la búsqueda de tipo texto introducida. En caso de ocurrir una
-     * SQLException la clase Errores() mostrará una ventana con la excepción
-     * manejada
-     * 
-     * @param conn
-     * @param row   El nombre de la columna por la cuál se quiere filtrar
-     * @param query Dato del que se quiere tomar como condición
-     * @return List<ViewImparten>
-     */
-    public List<ViewImparten> getByRowLike(Connection conn, String row, String query) {
-        List<ViewImparten> lista = new ArrayList<>();
-        try {
-            PreparedStatement s = conn.prepareStatement("select * from ViewImparten where " + row + " like upper(?)");
-            s.setString(1, "%" + query + "%");
-            ResultSet rs = s.executeQuery();
-            while (rs.next()) {
-                ViewImparten as = new ViewImparten();
-                as.setCursoImparten(rs.getString(1));
-                as.setExpedientealumno(rs.getInt(2));
-                as.setNombrealumno(rs.getString(3));
-                as.setApellidosalumno(rs.getString(4));
-                as.setDNIalumno(rs.getString(5));
-                as.setCodProf(rs.getInt(6));
-                as.setDNIprofesor(rs.getString(7));
-                as.setNombreProfesor(rs.getString(8));
-                as.setApellidosProfesor(rs.getString(9));
-                as.setNombredepartamento(rs.getString(10));
-                as.setIDasignatura(rs.getInt(11));
-                as.setNombreasignatura(rs.getString(12));
-                as.setCursoasignatura(rs.getString(13));
-                lista.add(as);
-            }
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
-        }
-        return lista;
-    }
-
-    /**
-     * Método que devuelve un ArrayList de ViewImparten con todos los campos que
-     * cooincidan con la búsqueda de valor numérico introducida. En caso de ocurrir
-     * una SQLException la clase Errores() mostrará una ventana con la excepción
-     * manejada
-     * 
-     * @param conn
-     * @param row   El nombre de la columna por la cuál se quiere filtrar
-     * @param query Dato del que se quiere tomar como condición
-     * @return List<ViewImparten>
-     */
-    public List<ViewImparten> getByRowLikeINT(Connection conn, String row, String query) {
-        List<ViewImparten> lista = new ArrayList<>();
-        try {
-            PreparedStatement s = conn.prepareStatement("select * from ViewImparten where " + row + " =?");
-            s.setString(1, "%" + query + "%");
-            ResultSet rs = s.executeQuery();
-            while (rs.next()) {
-                ViewImparten as = new ViewImparten();
-                as.setCursoImparten(rs.getString(1));
-                as.setExpedientealumno(rs.getInt(2));
-                as.setNombrealumno(rs.getString(3));
-                as.setApellidosalumno(rs.getString(4));
-                as.setDNIalumno(rs.getString(5));
-                as.setCodProf(rs.getInt(6));
-                as.setDNIprofesor(rs.getString(7));
-                as.setNombreProfesor(rs.getString(8));
-                as.setApellidosProfesor(rs.getString(9));
-                as.setNombredepartamento(rs.getString(10));
-                as.setIDasignatura(rs.getInt(11));
-                as.setNombreasignatura(rs.getString(12));
-                as.setCursoasignatura(rs.getString(13));
-                lista.add(as);
-            }
-        } catch (SQLException e) {
-            errores.muestraErrorSQL(e);
-        }
-        return lista;
-    }
 
 }

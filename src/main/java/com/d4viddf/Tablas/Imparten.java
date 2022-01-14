@@ -1,27 +1,30 @@
 package com.d4viddf.Tablas;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table (name = "imparten")
 @IdClass(ImpartenId.class)
 public class Imparten {
     @Id
-    public int profesor;
+    @ManyToOne(targetEntity = Profesores.class)
+    @JoinColumn(name = "profesor", nullable = false)
+    public Profesores profesor;
     @Id
-    public int asignatura;
+    @ManyToOne(targetEntity = Asignaturas.class)
+    @JoinColumn(name = "asignatura", nullable = false)
+    public Asignaturas asignatura;
     @Id
-    public int alumno;
+    @ManyToOne(targetEntity = Alumnos.class)
+    @JoinColumn(name = "alumno", nullable = false)
+    public Alumnos alumno;
     @Id
     public String curso;
 
     public Imparten() {
     }
 
-    public Imparten(String curso, int profesor, int asignatura, int alumno) {
+    public Imparten(String curso, Profesores profesor, Asignaturas asignatura, Alumnos alumno) {
         this.curso = curso;
         this.profesor = profesor;
         this.asignatura = asignatura;
@@ -48,7 +51,7 @@ public class Imparten {
     /**
      * @return int
      */
-    public int getProfesor() {
+    public Profesores getProfesor() {
         return this.profesor;
     }
 
@@ -56,7 +59,7 @@ public class Imparten {
     /**
      * @param profesor
      */
-    public void setProfesor(int profesor) {
+    public void setProfesor(Profesores profesor) {
         this.profesor = profesor;
     }
 
@@ -64,7 +67,7 @@ public class Imparten {
     /**
      * @return int
      */
-    public int getAsignatura() {
+    public Asignaturas getAsignatura() {
         return this.asignatura;
     }
 
@@ -72,7 +75,7 @@ public class Imparten {
     /**
      * @param asignatura
      */
-    public void setAsignatura(int asignatura) {
+    public void setAsignatura(Asignaturas asignatura) {
         this.asignatura = asignatura;
     }
 
@@ -80,7 +83,7 @@ public class Imparten {
     /**
      * @return int
      */
-    public int getAlumno() {
+    public Alumnos getAlumno() {
         return this.alumno;
     }
 
@@ -88,8 +91,17 @@ public class Imparten {
     /**
      * @param alumno
      */
-    public void setAlumno(int alumno) {
+    public void setAlumno(Alumnos alumno) {
         this.alumno = alumno;
     }
 
+    public int  getAlumnoExp (){
+        return alumno.getExpediente();
+    }
+    public int  getProfesorID (){
+        return profesor.getCod_prof();
+    }
+    public int  getAsignaturaID (){
+        return asignatura.getId();
+    }
 }

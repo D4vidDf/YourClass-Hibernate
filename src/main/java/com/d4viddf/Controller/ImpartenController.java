@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
 import com.d4viddf.Tablas.Imparten;
 import com.d4viddf.Tablas.ViewImparten;
@@ -14,7 +15,7 @@ import com.d4viddf.TablasDAO.AlumnosDAO;
 import com.d4viddf.TablasDAO.ImpartenDAO;
 import com.d4viddf.TablasDAO.ViewImpartenDAO;
 
-import com.d4viddf.TablasService.ViewImpartenService;
+import com.d4viddf.TablasService.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -91,9 +92,8 @@ public class ImpartenController extends DBViewController implements Initializabl
         colNombreAsignatura.setCellValueFactory(new PropertyValueFactory<ViewImparten, String>("Nombreasignatura"));
         colCursoAsignatura.setCellValueFactory(new PropertyValueFactory<ViewImparten, String>("Cursoasignatura"));
 
-        
-        cbxBuscarPor.getItems().setAll("Curso", "Código Alumno", "DNI Alumno", "Código profesor", "DNI Profesor",
-                "Código Asignatura", "Nombre Asignatura", "Todos");
+
+        cbxBuscarPor.getItems().setAll("Todos");
         cbxBuscarPor.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> selected, String oldI, String newI) {
@@ -104,7 +104,7 @@ public class ImpartenController extends DBViewController implements Initializabl
 
     /**
      * Método que gestiona el evento del botón buscar.
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -118,34 +118,10 @@ public class ImpartenController extends DBViewController implements Initializabl
         } else {
             if (selectedItem != null) {
                 switch (selectedItem) {
-                case "Curso":
-                    findByRowLike(ViewImpartenDAO.ROW_Curso_imparten);
-                    ;
-                    break;
-                case "Código alumno":
-                    findByRowLikeINT(ViewImpartenDAO.ROW_COD_alumno);
-                    ;
-                    break;
-                case "DNI alumno":
-                    findByRowLike(ViewImpartenDAO.ROW_DNI_alumno);
-                    ;
-                    break;
-                case "Código Profesor":
-                    findByRowLikeINT(ViewImpartenDAO.ROW_COD_prof);
-                    break;
-                case "DNI Profesor":
-                    findByRowLike(ViewImpartenDAO.ROW_DNI_profesor);
-                    break;
-                case "Código Asignatura":
-                    findByRowLikeINT(ViewImpartenDAO.ROW_COD_asg);
-                    break;
-                case "Nombre Asignatura":
-                    findByRowLike(ViewImpartenDAO.ROW_NOMBRE_Aasg);
-                    ;
-                    break;
-                case "Todos":
-                    mostrar();
-                    break;
+
+                    case "Todos":
+                        mostrar();
+                        break;
                 }
             } else
                 mostrar();
@@ -165,46 +141,23 @@ public class ImpartenController extends DBViewController implements Initializabl
         tabAlumnos.getItems().setAll(als);
     }
 
-    /**
-     * Método que muestra el alumno por el nombre o apellido introducido
-     * 
-     * @param row
-     */
-    private void findByRowLike(String row) {
 
-        List<ViewImparten> als = new ArrayList<>();
-        try {
-            als = mySQLDAOFactory.getViewImpartenDAO().getByRowLike(mySQLDAOFactory.getConnection(), row,
-                    txtBusqueda.getText());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        tabAlumnos.getItems().setAll(als);
-    }
-    private void findByRowLikeINT(String row) {
-
-        List<ViewImparten> als = new ArrayList<>();
-        try {
-            als = mySQLDAOFactory.getViewImpartenDAO().getByRowLikeINT(mySQLDAOFactory.getConnection(), row,
-                    txtBusqueda.getText());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        tabAlumnos.getItems().setAll(als);
-    }
 
     /**
      * Método para crear un alumno
-     * 
+     *
      * @param ae
      */
     @FXML
     private void crear(ActionEvent ae) {
         try {
-            ImpartenDAO im = new ImpartenDAO();
-            im.insertar(mySQLDAOFactory.getConnection(), txtCurso.getText().toString(),
-                    Integer.parseInt(txtExp.getText().toString()), Integer.parseInt(txtAsig.getText().toString()),
-                    Integer.parseInt(txtProfesor.getText().toString()));
+            Imparten imparten = new Imparten(txtCurso.getText().toString(),
+                    new ProfesoresService().findById(Integer.parseInt(txtProfesor.getText().toString())),
+                    new AsignaturasService().findById(Integer.parseInt(txtAsig.getText().toString())),
+                    new AlumnosService().findById(Integer.parseInt(txtExp.getText().toString()))
+            );
+            new ImpartenService().save(imparten);
+
         } catch (Exception e) {
             errores.muestraError(e);
         }
@@ -212,7 +165,7 @@ public class ImpartenController extends DBViewController implements Initializabl
 
     /**
      * Método para abrir el archivo del cuál insertar datos a la base de datos
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -227,7 +180,7 @@ public class ImpartenController extends DBViewController implements Initializabl
 
     /**
      * Método para exportar la tabla Alumnos en un fichero JSON
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -235,17 +188,17 @@ public class ImpartenController extends DBViewController implements Initializabl
         if (path.getText().isEmpty()) {
             guardar();
             try {
-                mySQLDAOFactory.getImpartenDAO().exportar(mySQLDAOFactory.getConnection(), path.getText().toString());
+                mySQLDAOFactory.getImpartenDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
-            } catch (SQLException e) {
-                errores.muestraErrorSQL(e);
+            } catch (Exception e) {
+                errores.muestraError(e);
             }
         } else {
             try {
-                mySQLDAOFactory.getImpartenDAO().exportar(mySQLDAOFactory.getConnection(), path.getText().toString());
+                mySQLDAOFactory.getImpartenDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
-            } catch (SQLException e) {
-                errores.muestraErrorSQL(e);
+            } catch (Exception e) {
+                errores.muestraError(e);
             }
 
         }
@@ -267,7 +220,7 @@ public class ImpartenController extends DBViewController implements Initializabl
     /**
      * Método para importar desde un fichero JSON los datos de un alumno para la
      * tabla Alumno
-     * 
+     *
      * @param ae
      */
     @FXML
@@ -275,21 +228,17 @@ public class ImpartenController extends DBViewController implements Initializabl
         if (path.getText().isEmpty()) {
             abrir(ae);
             try {
-                mySQLDAOFactory.getImpartenDAO().insertarLote(mySQLDAOFactory.getConnection(),
+                mySQLDAOFactory.getImpartenDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
-            } catch (SQLException se) {
-                errores.muestraErrorSQL(se);
             } catch (Exception e) {
                 errores.muestraError(e);
             }
         } else {
             try {
-                mySQLDAOFactory.getImpartenDAO().insertarLote(mySQLDAOFactory.getConnection(),
+                mySQLDAOFactory.getImpartenDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
-            } catch (SQLException se) {
-                errores.muestraErrorSQL(se);
             } catch (Exception e) {
                 errores.muestraError(e);
             }
