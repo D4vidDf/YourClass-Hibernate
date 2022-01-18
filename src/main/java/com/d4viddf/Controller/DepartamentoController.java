@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 
 import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
+import com.d4viddf.Factory.DAOFactory;
 import com.d4viddf.Tablas.Departamentos;
 import com.d4viddf.TablasDAO.DepartamentosDAO;
 
@@ -28,7 +29,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
-public class DepartamentoController extends DBViewController implements Initializable {
+public class DepartamentoController extends DAOFactory implements Initializable {
     DepartamentosService departamentosService = new DepartamentosService();
     Errores errores = new Errores();
     @FXML
@@ -147,7 +148,7 @@ public class DepartamentoController extends DBViewController implements Initiali
         float id = Float.parseFloat(txtBusqueda.getText());
         List<Departamentos> als = new ArrayList<>();
         try {
-            als = mySQLDAOFactory.getDepartamentosDAO().getByPresupuesto( id);
+            als = getDepartamentosDAO().getByPresupuesto( id);
         } catch (Exception e) {
             errores.muestraError(e);
         }
@@ -160,7 +161,7 @@ public class DepartamentoController extends DBViewController implements Initiali
     private void findByName() {
         List<Departamentos> dep = new ArrayList<>();
         try {
-            dep = mySQLDAOFactory.getDepartamentosDAO().getByName(txtBusqueda.getText().toString());
+            dep = getDepartamentosDAO().getByName(txtBusqueda.getText().toString());
         }catch (Exception e) {
             errores.muestraError(e);
         }
@@ -217,7 +218,7 @@ public class DepartamentoController extends DBViewController implements Initiali
         if (path.getText().isEmpty()) {
             guardar();
             try {
-                mySQLDAOFactory.getDepartamentosDAO().exportar(HibernateUtil.getSessionFactory().openSession(),
+                getDepartamentosDAO().exportar(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
             } catch (Exception e) {
@@ -225,7 +226,7 @@ public class DepartamentoController extends DBViewController implements Initiali
             }
         } else {
             try {
-                mySQLDAOFactory.getDepartamentosDAO().exportar(HibernateUtil.getSessionFactory().openSession(),
+                getDepartamentosDAO().exportar(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
             } catch (Exception e) {
@@ -259,7 +260,7 @@ public class DepartamentoController extends DBViewController implements Initiali
         if (path.getText().isEmpty()) {
             abrir(ae);
             try {
-                mySQLDAOFactory.getDepartamentosDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
+                getDepartamentosDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
             } catch (Exception e) {
@@ -267,7 +268,7 @@ public class DepartamentoController extends DBViewController implements Initiali
             }
         } else {
             try {
-                mySQLDAOFactory.getDepartamentosDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
+                getDepartamentosDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
             } catch (Exception se) {

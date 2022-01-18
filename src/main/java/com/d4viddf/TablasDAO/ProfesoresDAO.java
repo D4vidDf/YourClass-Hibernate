@@ -1,34 +1,25 @@
 package com.d4viddf.TablasDAO;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
-import com.d4viddf.Tablas.Alumnos;
-import com.d4viddf.Tablas.Asignaturas;
 import com.d4viddf.Tablas.Profesores;
-
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Clase ProfesoresDAO encargada de manejar la información de la base de datos
  */
-public class ProfesoresDAO {
+public class ProfesoresDAO implements DAO<Profesores>{
     public static String ROW_NOMBRE = "nombre";
     public static String ROW_APELLIDOS = "apellidos";
     public static String ROW_DEPARTAMENTO = "departamentos";

@@ -11,33 +11,29 @@ import com.d4viddf.TablasDAO.ProfesoresDAO;
 import com.d4viddf.TablasDAO.ViewImpartenDAO;
 
 public abstract class DAOFactory {
-    public static final int MYSQL = 1;
-    public abstract Connection getConnection() throws Exception;
-    public abstract AlumnosDAO getAlumnosDAO();
-    public abstract AsignaturasDAO getAsignaturasDAO();
-    public abstract DepartamentosDAO getDepartamentosDAO();
-    public abstract ProfesoresDAO getProfesoresDAO();
-    public abstract ImpartenDAO getImpartenDAO();
-    public abstract ViewImpartenDAO getViewImpartenDAO();
-
-    public static DAOFactory getDAOFactory(int whichFactory) {
-
-        switch (whichFactory) {
-        case MYSQL:
-            return new MySQLDAOFactory();
-        default:
-            return null;
-        }
+    public DAOFactory(){
+        super();
+    }
+    public AlumnosDAO getAlumnosDAO(){
+        return new AlumnosDAO();
+    }
+    public ProfesoresDAO getProfesoresDAO(){
+        return new ProfesoresDAO();
+    }
+    public ImpartenDAO getImpartenDAO(){
+        return new ImpartenDAO();
     }
 
-    public boolean releaseConnection(Connection connection) {
-        return false;
+    public ViewImpartenDAO getViewImpartenDAO(){
+        return new ViewImpartenDAO();
     }
 
-    public int getSize() {
-        return 0;
+    public DepartamentosDAO getDepartamentosDAO(){
+        return new DepartamentosDAO();
     }
 
-    public void shutdown() throws Exception {
+    public AsignaturasDAO getAsignaturasDAO(){
+        return new AsignaturasDAO();
     }
+
 }

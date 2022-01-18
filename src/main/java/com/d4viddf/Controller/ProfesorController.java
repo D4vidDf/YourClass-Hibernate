@@ -2,6 +2,7 @@ package com.d4viddf.Controller;
 
 import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
+import com.d4viddf.Factory.DAOFactory;
 import com.d4viddf.Tablas.Profesores;
 import com.d4viddf.TablasDAO.ProfesoresDAO;
 import com.d4viddf.TablasService.ProfesoresService;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ProfesorController extends DBViewController implements Initializable {
+public class ProfesorController extends DAOFactory implements Initializable {
     ProfesoresService profesoresService = new ProfesoresService();
     Errores errores = new Errores();
     @FXML
@@ -142,7 +143,7 @@ public class ProfesorController extends DBViewController implements Initializabl
     private void mostrar() {
         List<Profesores> pro = new ArrayList<>();
         try {
-            pro = mySQLDAOFactory.getProfesoresDAO().getAll(HibernateUtil.getSessionFactory().openSession());
+            pro = getProfesoresDAO().getAll(HibernateUtil.getSessionFactory().openSession());
         } catch (Exception e) {
             errores.muestraError(e);
         }
@@ -155,7 +156,7 @@ public class ProfesorController extends DBViewController implements Initializabl
     private void findByDNI() {
         List<Profesores> profesores = new ArrayList<>();
         try {
-            profesores = mySQLDAOFactory.getProfesoresDAO().getByDNI(txtBusqueda.getText());
+            profesores = getProfesoresDAO().getByDNI(txtBusqueda.getText());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,8 +173,7 @@ public class ProfesorController extends DBViewController implements Initializabl
 
         List<Profesores> als = new ArrayList<>();
         try {
-            als =
-                    mySQLDAOFactory.getProfesoresDAO().getByRowLike(row, txtBusqueda.getText());
+            als = getProfesoresDAO().getByRowLike(row, txtBusqueda.getText());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -186,8 +186,7 @@ public class ProfesorController extends DBViewController implements Initializabl
     private void findByAnho() {
         List<Profesores> als = new ArrayList<>();
         try {
-            als =
-                    mySQLDAOFactory.getProfesoresDAO().getByYear(txtBusqueda.getText());
+            als = getProfesoresDAO().getByYear(txtBusqueda.getText());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -237,14 +236,14 @@ public class ProfesorController extends DBViewController implements Initializabl
         if (path.getText().isEmpty()) {
             guardar();
             try {
-                mySQLDAOFactory.getProfesoresDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
+                getProfesoresDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
             } catch (Exception e) {
                 errores.muestraError(e);
             }
         } else {
             try {
-                mySQLDAOFactory.getProfesoresDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
+                getProfesoresDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
             } catch (Exception e) {
                 errores.muestraError(e);
@@ -277,7 +276,7 @@ public class ProfesorController extends DBViewController implements Initializabl
         if (path.getText().isEmpty()) {
             abrir(ae);
             try {
-                mySQLDAOFactory.getProfesoresDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
+                getProfesoresDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
             } catch (Exception e) {
@@ -285,7 +284,7 @@ public class ProfesorController extends DBViewController implements Initializabl
             }
         } else {
             try {
-                mySQLDAOFactory.getProfesoresDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
+                getProfesoresDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
             } catch (Exception e) {

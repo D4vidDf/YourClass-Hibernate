@@ -28,32 +28,6 @@ public class MainController implements Initializable {
 
     }
 
-    /**
-     * Gestiona el evento del botón ajustes. Al pulsar el botón se abre la ventana
-     * para realizar la modificación pertinentes al archivo settings.json
-     * 
-     * @param ae
-     */
-    @FXML
-    private void abrirSettings(ActionEvent ae) {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/fxml/settings.fxml"));
-        AbrirAjustesController c = new AbrirAjustesController();
-        loader.setController(c);
-        Parent root;
-        try {
-            root = loader.load();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Ajustes");
-            stage.getIcons().add(new Image("/drawable/blackboard.png"));
-            stage.setResizable(false);
-            stage.show();
-        } catch (IOException e) {
-            errores.muestraErrorIO(e);
-        }
-
-    }
 
     /**
      * Gestiona el evento del enlace. Al pulsar el enlace de ayuda se abre el

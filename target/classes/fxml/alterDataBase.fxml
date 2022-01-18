@@ -32,30 +32,20 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.effect.Blend?>
-<?import javafx.scene.effect.Bloom?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox prefHeight="400.0" prefWidth="597.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="400.0" prefWidth="597.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1">
   <children>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" style="-fx-background-color: #ffffff;" VBox.vgrow="ALWAYS">
          <children>
-            <Button layoutX="26.0" layoutY="84.0" mnemonicParsing="false" onAction="#crear" prefHeight="26.0" prefWidth="202.0" style="-fx-background-color: #3A2D32#3A2D32; -fx-background-radius: 10;" text="Crear tablas" textFill="WHITE">
-               <font>
-                  <Font name="Arial Bold" size="14.0" />
-               </font>
-            </Button>
             <ProgressBar id="progress" fx:id="progress" layoutX="26.0" layoutY="132.0" prefHeight="20.0" prefWidth="546.0" progress="0.0" style="-fx-border-radius: 10;">
                <effect>
                   <Bloom />
                </effect></ProgressBar>
-            <Button id="borrar" fx:id="borrar" layoutX="370.0" layoutY="84.0" mnemonicParsing="false" onAction="#borrar" prefHeight="26.0" prefWidth="202.0" style="-fx-background-color: #3A2D32#3A2D32; -fx-background-radius: 10;" text="Borrar datos" textFill="WHITE">
+            <Button id="borrar" fx:id="borrar" layoutX="198.0" layoutY="84.0" mnemonicParsing="false" onAction="#borrar" prefHeight="26.0" prefWidth="202.0" style="-fx-background-color: #3A2D32#3A2D32; -fx-background-radius: 10;" text="Borrar datos" textFill="WHITE">
                <font>
                   <Font name="Arial Bold" size="14.0" />
                </font>

@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 
 import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
+import com.d4viddf.Factory.DAOFactory;
 import com.d4viddf.Tablas.Asignaturas;
 import com.d4viddf.TablasDAO.AlumnosDAO;
 import com.d4viddf.TablasDAO.AsignaturasDAO;
@@ -29,7 +30,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
-public class AsignaturaController extends DBViewController implements Initializable {
+public class AsignaturaController extends DAOFactory implements Initializable {
     AsignaturasService asignaturasService = new AsignaturasService();
     Errores errores = new Errores();
     @FXML
@@ -139,7 +140,7 @@ public class AsignaturaController extends DBViewController implements Initializa
     private void findByRowLike(String row) {
         List<Asignaturas> asg = new ArrayList<>();
         try {
-            asg = mySQLDAOFactory.getAsignaturasDAO().getByRowLike( row,
+            asg = getAsignaturasDAO().getByRowLike( row,
                     txtBusqueda.getText());
         } catch (Exception e) {
             e.printStackTrace();
@@ -189,14 +190,14 @@ public class AsignaturaController extends DBViewController implements Initializa
         if (path.getText().isEmpty()) {
             guardar();
             try {
-                mySQLDAOFactory.getAsignaturasDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
+                getAsignaturasDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
             } catch (Exception e) {
                 errores.muestraError(e);
             }
         } else {
             try {
-                mySQLDAOFactory.getAsignaturasDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
+                getAsignaturasDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
             } catch (Exception e) {
                 errores.muestraError(e);

@@ -1,9 +1,7 @@
 package com.d4viddf.TablasService;
 
 import com.d4viddf.Factory.SesionFactory;
-import com.d4viddf.Tablas.Alumnos;
 import com.d4viddf.Tablas.Imparten;
-import com.d4viddf.TablasDAO.AlumnosDAO;
 import com.d4viddf.TablasDAO.ImpartenDAO;
 
 import java.util.List;

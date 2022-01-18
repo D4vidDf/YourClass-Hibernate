@@ -1,30 +1,22 @@
 package com.d4viddf.TablasDAO;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
 import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
-import com.d4viddf.Tablas.Alumnos;
 import com.d4viddf.Tablas.Departamentos;
-
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-public class DepartamentosDAO {
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class DepartamentosDAO implements DAO<Departamentos>{
     private static FileWriter file;
     Errores errores = new Errores();
     static Scanner teclado = new Scanner(System.in);

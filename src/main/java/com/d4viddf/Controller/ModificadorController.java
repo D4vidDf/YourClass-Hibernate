@@ -15,7 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 
-public class ModificadorController extends DBViewController implements Initializable {
+public class ModificadorController implements Initializable {
     @FXML
     TextArea prompt;
     @FXML
@@ -32,11 +32,29 @@ public class ModificadorController extends DBViewController implements Initializ
      */
     @FXML
     public void borrar(ActionEvent ae) {
-        new ImpartenService().deleteAll();
-        new DepartamentosService().deleteAll();
-        new AlumnosService().deleteAll();
-        new ProfesoresService().deleteAll();
-        new AsignaturasService().deleteAll();
+        progress.setProgress(0.1);
+        try {
+            prompt.appendText("------------------------------------------------------------------------------\n");
+            new ImpartenService().deleteAll();
+            prompt.appendText("Borrado los datos de la tabla Imparten");
+            progress.setProgress(0.2);
+            new ProfesoresService().deleteAll();
+            prompt.appendText("\nBorrado los datos de la tabla Profesores");
+            progress.setProgress(0.4);
+            new DepartamentosService().deleteAll();
+            prompt.appendText("\nBorrado los datos de la tabla Departamentos");
+            progress.setProgress(0.6);
+            new AlumnosService().deleteAll();
+            prompt.appendText("\nBorrado los datos de la tabla Alumnos");
+            progress.setProgress(0.8);
+            new AsignaturasService().deleteAll();
+            prompt.appendText("\nBorrado los datos de la tabla Asignaturas");
+            progress.setProgress(1);
+            prompt.appendText("\n------------------------------------------------------------------------------\n");
 
+            prompt.appendText("\nTodas las tablas borradas correctamente");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

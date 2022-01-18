@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
 
 import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
+import com.d4viddf.Factory.DAOFactory;
 import com.d4viddf.Tablas.Alumnos;
 import com.d4viddf.TablasDAO.AlumnosDAO;
 
@@ -30,7 +31,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
-public class AlumnosController extends DBViewController implements Initializable {
+public class AlumnosController extends DAOFactory implements Initializable {
     Errores errores = new Errores();
     AlumnosService alumnosService = new AlumnosService();
     @FXML
@@ -145,7 +146,7 @@ public class AlumnosController extends DBViewController implements Initializable
     private void findByDNI() {
         List<Alumnos> als = new ArrayList<>();
         try {
-            als = mySQLDAOFactory.getAlumnosDAO().getByDNI(txtBusqueda.getText());
+            als = getAlumnosDAO().getByDNI(txtBusqueda.getText());
         } catch (Exception e) {
             errores.muestraError(e);
         }
@@ -160,7 +161,7 @@ public class AlumnosController extends DBViewController implements Initializable
     private void findByRowLike(String row) {
         List<Alumnos> als = new ArrayList<>();
         try {
-            als = mySQLDAOFactory.getAlumnosDAO().getByRowLike(row,
+            als = getAlumnosDAO().getByRowLike(row,
                     txtBusqueda.getText());
         } catch (Exception e) {
             errores.muestraError(e);
@@ -174,7 +175,7 @@ public class AlumnosController extends DBViewController implements Initializable
     private void findByAnho() {
         List<Alumnos> als = new ArrayList<>();
         try {
-            als = mySQLDAOFactory.getAlumnosDAO().getByYear(txtBusqueda.getText());
+            als = getAlumnosDAO().getByYear(txtBusqueda.getText());
         } catch (Exception e) {
             errores.muestraError(e);
         }
@@ -228,14 +229,14 @@ public class AlumnosController extends DBViewController implements Initializable
         if (path.getText().isEmpty()) {
             guardar();
             try {
-                mySQLDAOFactory.getAlumnosDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
+                getAlumnosDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
             } catch (Exception e) {
                 errores.muestraError(e);
             }
         } else {
             try {
-                mySQLDAOFactory.getAlumnosDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
+                getAlumnosDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
             } catch (Exception e) {
                 errores.muestraError(e);

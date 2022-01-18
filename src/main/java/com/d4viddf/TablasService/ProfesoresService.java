@@ -1,6 +1,5 @@
 package com.d4viddf.TablasService;
 
-import com.d4viddf.Error.Errores;
 import com.d4viddf.Factory.SesionFactory;
 import com.d4viddf.Tablas.Profesores;
 import com.d4viddf.TablasDAO.ProfesoresDAO;

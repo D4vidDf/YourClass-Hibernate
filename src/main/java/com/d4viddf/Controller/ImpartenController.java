@@ -9,8 +9,8 @@ import java.util.ResourceBundle;
 
 import com.d4viddf.Connections.HibernateUtil;
 import com.d4viddf.Error.Errores;
-import com.d4viddf.Tablas.Imparten;
-import com.d4viddf.Tablas.ViewImparten;
+import com.d4viddf.Factory.DAOFactory;
+import com.d4viddf.Tablas.*;
 import com.d4viddf.TablasDAO.AlumnosDAO;
 import com.d4viddf.TablasDAO.ImpartenDAO;
 import com.d4viddf.TablasDAO.ViewImpartenDAO;
@@ -31,7 +31,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
-public class ImpartenController extends DBViewController implements Initializable {
+public class ImpartenController extends DAOFactory implements Initializable {
     ViewImpartenService viewImpartenService = new ViewImpartenService();
     Errores errores = new Errores();
     @FXML
@@ -142,7 +142,6 @@ public class ImpartenController extends DBViewController implements Initializabl
     }
 
 
-
     /**
      * Método para crear un alumno
      *
@@ -151,11 +150,12 @@ public class ImpartenController extends DBViewController implements Initializabl
     @FXML
     private void crear(ActionEvent ae) {
         try {
+            Profesores profesores = new ProfesoresService().findById(Integer.parseInt(txtProfesor.getText().toString()));
+            Asignaturas asignaturas = new AsignaturasService().findById(Integer.parseInt(txtAsig.getText().toString()));
+            Alumnos alumnos = new AlumnosService().findById(Integer.parseInt(txtExp.getText().toString()));
             Imparten imparten = new Imparten(txtCurso.getText().toString(),
-                    new ProfesoresService().findById(Integer.parseInt(txtProfesor.getText().toString())),
-                    new AsignaturasService().findById(Integer.parseInt(txtAsig.getText().toString())),
-                    new AlumnosService().findById(Integer.parseInt(txtExp.getText().toString()))
-            );
+                    profesores, asignaturas,alumnos
+                    );
             new ImpartenService().save(imparten);
 
         } catch (Exception e) {
@@ -188,14 +188,14 @@ public class ImpartenController extends DBViewController implements Initializabl
         if (path.getText().isEmpty()) {
             guardar();
             try {
-                mySQLDAOFactory.getImpartenDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
+                getImpartenDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
             } catch (Exception e) {
                 errores.muestraError(e);
             }
         } else {
             try {
-                mySQLDAOFactory.getImpartenDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
+                getImpartenDAO().exportar(HibernateUtil.getSessionFactory().openSession(), path.getText().toString());
                 estado.setText("Se ha exportado correctamente.");
             } catch (Exception e) {
                 errores.muestraError(e);
@@ -228,7 +228,7 @@ public class ImpartenController extends DBViewController implements Initializabl
         if (path.getText().isEmpty()) {
             abrir(ae);
             try {
-                mySQLDAOFactory.getImpartenDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
+                getImpartenDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
             } catch (Exception e) {
@@ -236,7 +236,7 @@ public class ImpartenController extends DBViewController implements Initializabl
             }
         } else {
             try {
-                mySQLDAOFactory.getImpartenDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
+                getImpartenDAO().insertarLote(HibernateUtil.getSessionFactory().openSession(),
                         path.getText().toString());
                 estado.setText("Se han importado correctamente los datos.");
             } catch (Exception e) {

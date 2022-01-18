@@ -1,21 +1,7 @@
 package com.d4viddf.TablasDAO;
 
-import java.sql.Connection;
-import java.time.DateTimeException;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
 import com.d4viddf.Error.Errores;
-import com.d4viddf.Tablas.Alumnos;
 import com.d4viddf.Tablas.Imparten;
-
-import com.d4viddf.Tablas.Profesores;
 import com.d4viddf.TablasService.AlumnosService;
 import com.d4viddf.TablasService.AsignaturasService;
 import com.d4viddf.TablasService.ProfesoresService;
@@ -25,7 +11,14 @@ import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class ImpartenDAO {
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.DateTimeException;
+import java.util.List;
+
+public class ImpartenDAO implements DAO<Imparten>{
     Errores errores = new Errores();
     private static FileWriter file;
 
@@ -66,7 +59,7 @@ public class ImpartenDAO {
 
     public List<Imparten> getAll(Session session) {
 
-        return (List<Imparten>) session.createQuery("from Imparten ").list();
+        return (List<Imparten>) session.createQuery("from Imparten").list();
     }
 
     public void deleteAll(Session sesion) {

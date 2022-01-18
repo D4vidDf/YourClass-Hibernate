@@ -25,7 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-public class AlumnosDAO {
+public class AlumnosDAO implements DAO<Alumnos> {
     public static String ROW_NOMBRE = "nombre";
     public static String ROW_APELLIDOS = "apellidos";
     private static FileWriter file;
